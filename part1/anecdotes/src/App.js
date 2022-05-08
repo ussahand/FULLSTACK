@@ -33,7 +33,7 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
   const next = ()=> 
-    setSelected( Math.floor(Math.random() * 7) );
+    setSelected( Math.floor(Math.random() * anecdotes.length) );
   
   const [votes, setVote] = useState(anecdotes.slice().fill(0))    
   const vote = () =>
