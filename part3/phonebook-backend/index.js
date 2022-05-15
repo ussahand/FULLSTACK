@@ -7,7 +7,6 @@ const morgan = require('morgan')
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-
 console.clear();
 
 // const myRequestLogger = (request, response, next) => {
