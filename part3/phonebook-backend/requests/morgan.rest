@@ -1,0 +1,10 @@
+get http://localhost:3001/list
+
+###
+post http://localhost:3001/list
+Content-Type: application/json
+
+{
+  "name":"morgan",
+  "family": "shooster"
+}
