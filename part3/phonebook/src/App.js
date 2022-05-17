@@ -43,13 +43,13 @@ const App = () => {
         const changedContact = { ...contact, number: input.number }
         crud
           .dbUpdate(changedContact, appMsg())
-          .then(() => setPhone(phoneBook.map((x, i) => i === indx ? changedContact : x)))
+          .then(resp => resp && setPhone(phoneBook.map((x, i) => i === indx ? resp : x)))
       }
       setInput({ name: '', number: '' })//MUST BE HERE OR IN useEffect
     } else {
       crud
         .dbAdd(input, appMsg())
-        .then(resp => setPhone(phoneBook.slice().concat(resp)))
+        .then(resp => resp && setPhone(phoneBook.slice().concat(resp)))
       setInput({ name: '', number: '' })//MUST BE HERE OR IN useEffect
     }
   }
@@ -63,7 +63,6 @@ const App = () => {
         .then(() => setPhone(phoneBook.filter(x => x.id.toString() !== e.target.id)))   
   }
   
-
   // Update name & number text input elements
   const [input, setInput] = useState({name: '', number: '' });
   const inputChange = () => (e)=>
@@ -84,8 +83,7 @@ const App = () => {
   useEffect( ()=>{
     crud
       .dbGetAll( appMsg() )
-      .then( data => setPhone( data ))
-
+      .then( data => data && setPhone( data ))
   },[])
   useEffect(()=>{
   if(filteredBook.length === 0 && search.length >0  )
