@@ -1,0 +1,33 @@
+GET http://localhost:3001/api/blogs/info HTTP/1.1
+###
+GET http://localhost:3001/api/blogs 
+###
+GET http://localhost:3001/api/blogs/628de5e76ccb401264e5cbc0
+###
+post http://localhost:3001/api/blogs http/1.1
+Content-Type: application/json
+
+{"title": "rocklin5", 
+"author": "orartou", 
+"url": "baghdad4", 
+"likes":4
+}
+
+###
+DELETE http://localhost:3001/api/blogs/3
+###
+PUT http://localhost:3001/api/blogs/2
+Content-Type: application/json
+
+{
+"id": "628df5662c40def48fcd8e7c",
+"title": "rocklin5", 
+"author": "orartou", 
+"url": "baghdad5", 
+"likes":5
+}
+###
+PATCH http://localhost:3001/api/blogs/628dd38616332602a57dffca
+Content-Type: application/json
+
+{ "likes": 4}
