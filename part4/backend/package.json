@@ -12,7 +12,8 @@
     "test": "set NODE_ENV=test&& jest --verbose --runInBand --forceExit",
     "testapi": "set NODE_ENV=test&& jest -- tests/blogs_api.test.js --verbose --runInBand --forceExit",
     "testlogin": "set NODE_ENV=test&& jest -- tests/blogs_login_api.test.js --verbose --runInBand --forceExit ",
-    "prac": "set NODE_ENV=development&& nodemon practice.js"
+    "prac": "set NODE_ENV=development&& nodemon practice.js",
+    "start:test": "cross-env NODE_ENV=test node index.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -26,6 +27,7 @@
     "mongoose": "^6.3.4"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0 || ^8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.2",

@@ -2,13 +2,8 @@ const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-// ToDo: info sometimes issues :Recursive json
-
-blogRouter.get('/info', (req, resp) => {
-  resp.send('<h3 style="color:green;border:2px solid red">Hello to blogs list </h3>')
-})
-
-// blogRouter.get('/', (req, resp, nxt) => Blog.find({}).then(list => resp.json(list)).catch(err => nxt(err)))
+// blogRouter.get('/', (req, resp, nxt) =>
+//    Blog.find({}).then(list => resp.json(list)).catch(err => nxt(err)))
 
 // blogRouter.get('/', async (req, resp) => {
 //   // await Blog.deleteMany({})
@@ -19,21 +14,23 @@ blogRouter.get('/info', (req, resp) => {
 blogRouter.get('/', async (req, resp) => {
   // const list = await User.findById(req.token.userId).populate('blogs')
 
-  // the below marked is correct solution because it shows only authorized user blogs
-  // const list = await User.findById(req.token.userId)
-  //   .populate({
-  //     path: 'blogs',
-  //     populate: { path: 'user', select: 'name userName' },
-  //   })
-  // resp.json(list.blogs)
+  // the below marked is correct solution because it shows only authorized user blogs,
+  // but I disabled due to Fullstack exersize demands.
+
+  const list = await User.findById(req.token.userId)
+    .populate({
+      path: 'blogs',
+      populate: { path: 'user', select: 'name userName' },
+    })
+  resp.json(list.blogs)
 
   // The below code is only for fullstack excercises
-  const list = await Blog.find({})
-    .populate({ path: 'user', select: 'name userName' })
-  resp.json(list)
+//  const list = await Blog.find({})
+  //  .populate({ path: 'user', select: 'name userName' })
+  // resp.json(list)
 })
 
-// blogRouter.get('/:id', (req, resp, nxt) => 
+// blogRouter.get('/:id', (req, resp, nxt) =>
 //   Blog.findById(req.params.id)
 //   .then(record => resp.json(record))
 //   .catch(err => nxt(err)
@@ -51,7 +48,7 @@ blogRouter.get('/', async (req, resp) => {
 //   const found = await User.findById(loggedinUser.userId)
 //     .populate({path: 'blogs',
 //               match: {_id: req.params.id},
-//             }) 
+//             })
 //   found
 //     ? resp.json(found.blogs)
 //     : resp.status(404).send('record was not find')
@@ -90,8 +87,7 @@ blogRouter.post('/', async (req, resp) => {
   // Blog.deleteMany({})
   const { title } = req.body
   const records = await Blog.find({ title })
-  if (records.length) resp.status(404).send({ error: 'title must be unique' })
-  else {
+  if (records.length) { resp.status(404).send({ error: 'title must be unique' }) } else {
     const content = { ...req.body, user: loggedinUser.userId } // add user id to a new blog
     const savedBlog = await Blog(content).save()
     const userRecord = await User.findById(loggedinUser.userId)
@@ -128,13 +124,12 @@ blogRouter.delete('/:id', async (req, resp) => {
 
   const deleted = await Blog.findByIdAndDelete(found[0]._id)
   if (deleted) {
-    userToUpdate = await User.findById(loggedinUser.userId)
+    const userToUpdate = await User.findById(loggedinUser.userId)
     const index = userToUpdate.blogs.indexOf(found[0]._id) // or req.params.id
     userToUpdate.blogs.splice(index, 1)
     userToUpdate.save()
     resp.status(204).send('record deleted successfully.')
-  } else
-    resp.status(404).send('record was not find')
+  } else { resp.status(404).send('record was not find') }
 })
 
 // blogRouter.put('/:id', (req, resp, next) => {
@@ -156,13 +151,14 @@ blogRouter.delete('/:id', async (req, resp) => {
 
 blogRouter.put('/:id', async (req, resp) => { // blog id
   const loggedinUser = req.token
-  let foundDoc = await Blog.findOne({ _id: req.params.id, user: loggedinUser.userId })
+  const foundDoc = await Blog.findOne({ _id: req.params.id, user: loggedinUser.userId })
   if (!foundDoc) {
     resp.status(404).send('record was not find')
     return
   }
 
-  const record = await Blog.findByIdAndUpdate(foundDoc._id, { ...foundDoc._doc, ...req.body }, { new: true })
+  const record = await Blog
+    .findByIdAndUpdate(foundDoc._id, { ...foundDoc._doc, ...req.body }, { new: true })
   resp.json(record)
 })
 
@@ -180,7 +176,7 @@ blogRouter.put('/:id', async (req, resp) => { // blog id
 //     const update = {...found._doc, ...req.body}
 //     const record = await Blog.findByIdAndUpdate(req.params.id, update, { new: true })
 //     resp.json(record)
-//   } 
+//   }
 // })
 
 blogRouter.patch('/:id', async (req, resp) => {
@@ -191,7 +187,8 @@ blogRouter.patch('/:id', async (req, resp) => {
     return
   }
 
-  const record = await Blog.findByIdAndUpdate(foundDoc._id, { ...foundDoc._doc, ...req.body }, { new: true })
+  const record = await Blog
+    .findByIdAndUpdate(foundDoc._id, { ...foundDoc._doc, ...req.body }, { new: true })
   resp.json(record)
 })
 

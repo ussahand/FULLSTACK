@@ -8,4 +8,9 @@ usersRouter.get('/', async (req, resp) => {
   resp.json(users)
 })
 
-module.exports = usersRouter 
+usersRouter.get('/info', (req, resp) => {
+  resp.send('<h3 style="color:green;border:2px solid red">Hello to blogs list </h3>')
+})
+
+
+module.exports = usersRouter

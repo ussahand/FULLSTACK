@@ -1,5 +1,6 @@
-const { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes, mostLikes2, mostLikes3, mostLikes4 } = require('../utils/list_helper')
-const { info } = require('../utils/logger')
+const {
+  dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes, mostLikes2, mostLikes3, mostLikes4,
+} = require('../utils/list_helper')
 
 const blogs = [
   {
@@ -54,12 +55,12 @@ const blogs = [
 
 describe('<<first test sets for blogs>>', () => {
   test('dummy returns one', () => {
-    const blogs = []
-    const result = dummy(blogs)
+    const noBlogs = []
+    const result = dummy(noBlogs)
     expect(result).toBe(1)
   })
-  
-  test('when list has only one blog, equals the like of that',() => {
+
+  test('when list has only one blog, equals the like of that', () => {
     // console.log('in the tester: ', blogs.length)
     const tot = totalLikes(blogs[1])
     expect(tot).toBe(5)
@@ -67,52 +68,50 @@ describe('<<first test sets for blogs>>', () => {
 
   test('favorite blog', () => {
     const fav = {
-      title: "Canonical string reduction",
-      author: "Edsger W. Dijkstra",
-      likes: 12
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
     }
     expect(favoriteBlog(blogs)).toEqual(fav)
   })
-  
 
   test('The Top blogger', () => {
     const topMost = {
-      author: "Robert C. Martin",
-      blogs: 3
+      author: 'Robert C. Martin',
+      blogs: 3,
     }
     expect(mostBlogs(blogs)).toEqual(topMost)
   })
 
-  test('most Likes by coding', ()=> {
+  test('most Likes by coding', () => {
     const mostly = {
-      author: "Edsger W. Dijkstra",
-      likes: 17
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     }
     expect(mostLikes(blogs)).toEqual(mostly)
   })
 
-  test('most Likes by coding 2', ()=> {
+  test('most Likes by coding 2', () => {
     const mostly = {
-      author: "Edsger W. Dijkstra",
-      likes: 17
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     }
     expect(mostLikes2(blogs)).toEqual(mostly)
   })
 
-  test('most Likes by lodash', ()=> {
+  test('most Likes by lodash', () => {
     const mostly = {
-      author: "Edsger W. Dijkstra",
-      likes: 17
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     }
     expect(mostLikes3(blogs)).toEqual(mostly)
   })
 
-  test('most Likes by lodash chain', ()=> {
+  test('most Likes by lodash chain', () => {
     const mostly = {
-      author: "Edsger W. Dijkstra",
-      likes: 17
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     }
     expect(mostLikes4(blogs)).toEqual(mostly)
   })
-
 })

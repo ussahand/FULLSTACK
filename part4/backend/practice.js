@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt')
-const app = require('../app')
+// const bcrypt = require('bcrypt')
 const supertestRequest = require('supertest')
+const app = require('./app')
 
 const api = supertestRequest(app)
 // const tic = Date.now()
@@ -8,44 +8,43 @@ const api = supertestRequest(app)
 dummy()
 
 async function dummy() {
-  loginSignup = {
+  const loginSignup = {
     userName: 'aaaaaa',
     password: '132132132',
     name: 'AAAAAAAAAaaaa',
   }
   const loginToken = await loginGetToken(loginSignup)
-  
+
   showBlogs(loginToken)
-  
+
   async function loginGetToken(loginInfo) {
-    let resp =  await api.get('/api/login/')
-    .expect(200)
+    let resp = await api.get('/api/login/')
+      .expect(200)
     console.log('users list: ', resp.body)
-  
-    resp =  await api.post('/api/login/')
-    .send(loginInfo)
-    .expect(200)
+
+    resp = await api.post('/api/login/')
+      .send(loginInfo)
+      .expect(200)
     // console.log('Token created properly', resp.body)
     return resp.body
   }
-  
+
   async function showBlogs(loginToken) {
-    const resp = await api.get('/api/blogs')
+    await api.get('/api/blogs')
       .set('authorization', `Bearer ${loginToken}`)
     // console.log('Blogs list: ', resp.body)
-  }  
+  }
   async function showBlogs(loginToken) {
-    const resp = await api.get('/api/blogs')
+    await api.get('/api/blogs')
       .set('authorization', `Bearer ${loginToken}`)
     // console.log('Blogs list: ', resp.body)
-  }  
+  }
 }
 
 // setTimeout(() => {
 //   toc = Date.now()-tic
-//   console.log('interval', toc)  
+//   console.log('interval', toc)
 // }, 2000);
-
 
 // const _ = require('lodash')
 // const objs = [

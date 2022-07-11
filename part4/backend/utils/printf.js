@@ -111,12 +111,12 @@ const lexical = (match, indx, str) => {
   lexical(newMatch, newIndx, str)
 }
 
-const colorParser = printftedText => {
+const colorParser = printFormattedText => {
   output = ''
   stack = []
   newColorParams = []
-  // console.log('colorParser: ', printftedText)
-  lexical('', 0, printftedText)
+  // console.log('colorParser: ', printFormattedText)
+  lexical('', 0, printFormattedText)
   if (typeof process === 'object' && process?.release?.name === 'node') {
     output += RESET // reset all colors to default
   }
@@ -152,6 +152,76 @@ const colorParser = printftedText => {
   (?<align>+|-) it is a group and will capture by align name and
     you can access it by result.groups.align
 */
+
+function objectToStr(obj) {
+  const keys = Object.getOwnPropertyNames(obj)
+
+  let strObj = '#red;{\n'
+  let propColor
+  // for (const x of keys) {
+  keys.forEach(x => {
+    strObj += `#white${x}: `
+    const propValType = obj[x] === null ? 'null' : typeof obj[x]
+    switch (propValType) {
+      case 'string':
+        propColor = obj[x][0] === '[' || obj[x][0] === '{' // like to array or object
+          ? '#green' : '#grey'
+        strObj += `${propColor}${obj[x]}\n`
+        break
+      case 'number':
+        propColor = '#yellow'
+        strObj += `${propColor}${obj[x]}\n`
+        break
+      case 'undefined':
+        propColor = '#blue'
+        strObj += `${propColor}undefined\n`
+        break
+      case 'null':
+        propColor = '#blue'
+        strObj += `${propColor}null\n`
+        break
+      case 'object':
+        propColor = '#green'
+        strObj += `${propColor}${JSON.stringify(obj[x])}\n`
+        break
+      default:
+        propColor = '#cyan'
+        strObj += `${propColor}${obj[x]}\n`
+    }
+  })
+
+  strObj += '#red;}'
+  return strObj
+}
+
+function stringify(param) {
+  let coded = ''
+
+  // note: typeof(null) === typeof(Object) === 'object'
+  const propValType = param === null ? 'null' : typeof param
+
+  switch (propValType) {
+    case 'string':
+      coded = param
+      break
+    case 'number':
+    case 'boolean':
+      coded = param.toString()
+      break
+    case 'undefined':
+      coded = 'undefined'
+      break
+    case 'null':
+      coded = 'null'
+      break
+    case 'object':
+      coded = objectToStr(param)
+      break
+    default:
+      coded = JSON.stringify(param)
+  }
+  return coded
+}
 
 const printf = (...params) => {
   const inject = (first, specifierLen, str, align, width) => {
@@ -244,74 +314,6 @@ const printf = (...params) => {
     const styledText = colorParser(params[0])
     console.log(...styledText)
   }
-}
-
-function stringify(param) {
-  let coded = ''
-
-  // note: typeof(null) === typeof(Object) === 'object'
-  const propValType = param === null ? 'null' : typeof param
-
-  switch(propValType) {
-    case 'string': 
-    coded = param
-    break
-    case 'number': 
-    case 'boolean':
-      coded = param.toString()
-      break
-    case 'undefined': 
-      coded = 'undefined'
-      break
-    case 'null':
-      coded = 'null'
-      break
-    case 'object': 
-      coded = objectToStr(param)
-      break
-    default:
-      coded = JSON.stringify(param)
-  } 
-  return coded
-}
-
-function objectToStr(obj) {
-  const keys = Object.getOwnPropertyNames(obj)
-
-  let strObj = '#red;{\n'
-  let propColor
-  for (const x of keys) {
-    strObj += `#white${x}: `
-    const propValType = obj[x] === null ? 'null' : typeof obj[x]
-    switch (propValType) {
-      case 'string':
-        propColor = obj[x][0] == '[' || obj[x][0] == '{' // like to array or object
-          ? '#green' : '#grey'
-        strObj += `${propColor}${obj[x]}\n`
-        break
-      case 'number':
-        propColor = '#yellow'
-        strObj += `${propColor}${obj[x]}\n`
-        break
-      case 'undefined':
-        propColor = '#blue'
-        strObj += `${propColor}undefined\n`
-        break
-      case 'null':
-        propColor = '#blue'
-        strObj += `${propColor}null\n`
-        break
-      case 'object':
-        propColor = '#green'
-        strObj += `${propColor}${JSON.stringify(obj[x])}\n`
-        break
-      default:
-        propColor = '#cyan'
-        strObj += `${propColor}${obj[x]}\n`
-    }
-  }
-  strObj += '#red;}'
-  return strObj
 }
 
 // const prms = [959, 'Hi', 'I #red%-10.3iand %+8.3f=%s',

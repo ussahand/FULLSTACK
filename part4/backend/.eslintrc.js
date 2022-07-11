@@ -3,13 +3,16 @@ module.exports = {
     node: true,
     commonjs: true,
     es2021: true,
-    jest, true,
+    jest: true,
   },
   extends: [
     'airbnb-base',
   ],
   parserOptions: {
     ecmaVersion: 'latest',
+  },
+  globals: {
+    'navigator': true,
   },
   rules: {
     'linebreak-style': ['error','windows' ],
@@ -18,5 +21,7 @@ module.exports = {
     'nonblock-statement-body-position': ['error', 'below'],
     'no-nested-ternary': 'off',
     'no-unused-expressions':['error', { 'allowShortCircuit': false, 'allowTernary': true }],
+    'no-underscore-dangle': "off",
+    'no-param-reassign': ["error", { "props": false }],
   },
 };
