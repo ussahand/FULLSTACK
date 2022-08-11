@@ -159,6 +159,7 @@ blogRouter.put('/:id', async (req, resp) => { // blog id
 
   const record = await Blog
     .findByIdAndUpdate(foundDoc._id, { ...foundDoc._doc, ...req.body }, { new: true })
+	 .populate({ path: 'user', select: 'name userName' })
   resp.json(record)
 })
 

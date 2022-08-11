@@ -1,0 +1,6 @@
+toDo 1: request logger logs the rest api bodies, so if the body 
+  contains plain password, it will revealed it
+  solution: it logs in the server not in the client side
+
+toDo 2: printf issue an error if ther input object have circular reference
+

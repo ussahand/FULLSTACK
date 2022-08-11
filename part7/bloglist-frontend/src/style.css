@@ -1,0 +1,22 @@
+body {
+  margin: 0px; 
+  padding: 10px; 
+  background: #1b1c25; 
+  height: 90vh; 
+  color: white;
+}
+
+.icons:hover{
+  color: red;
+  transform: scale(1.2);
+}
+
+.links{
+  text-decoration: none;
+  color: #FFF;
+}
+
+.blogList{ text-align: center; display: flex; }
+.blogList i {font-size: '0.8em'; flex: 1 1 auto; text-align: right}
+.links:nth-child(even){ color: orange; }
+
