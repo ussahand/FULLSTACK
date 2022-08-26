@@ -1,0 +1,35 @@
+body{
+  background: #1b1c25;
+  color: yellow;
+}
+#sign-form {
+  margin: 0.5rem;
+  display: flex;
+}
+
+#sign-form > div {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid red;
+}
+
+#sign-form > div >div {
+  margin: 5px;
+}
+
+.notification-box {
+  color: orangered
+}
+
+.add-book {
+  margin: 0.5rem;
+}
+.add-book > form > div {
+  margin-bottom: 5px;
+}
+
+.emphasis {
+  font-size: 1.5rem;
+  color: red;
+  font-style: italic;
+}
