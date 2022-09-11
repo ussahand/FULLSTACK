@@ -1,0 +1,13 @@
+.patientInfo p{
+  margin: 1px;
+  font-size: 0.8em;
+}
+
+.patientInfo div {
+  margin-top: 5px;
+}
+
+.patientInfo > div div {
+  padding-left: 5px;
+
+}

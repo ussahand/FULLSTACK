@@ -1,0 +1,42 @@
+post http://localhost:3001/api/patients 
+  Content-Type: application/json
+  
+{
+  "name": "patric natasha",
+  "dateOfBirth": "2022-01-01",
+  "ssn": "12345-122X",
+  "gender": "female",
+  "occupation": "San diemo mayor"
+}
+###
+post http://localhost:3001/api/patients/d27736ec-f723-11e9-8f0b-362b9e155667/entries 
+  Content-Type: application/json
+  
+{
+    "date": "1922-09-08",
+    "type": "OccupationalHealthcare",
+    "specialist": "MD House",
+    "description": "Yearly control visit. Cholesterol levels back to normal.",
+    "healthCheckRating": 2,
+    "diagnosisCodes":["S03.5"],
+    "employerName": "simon"
+}
+
+###
+post http://localhost:3001/api/patients/d27736ec-f723-11e9-8f0b-362b9e155667/entries 
+  Content-Type: application/json
+
+{
+  "description": "hello",
+  "date": "1999/01-02",
+  "specialist": "ginger man",
+  "type": "Hospital",
+  "diagnosisCodes": ["S03.5","Z74.3", "M51.2"],
+  "discharge":{"date":"2022/02/02", "criteria":"no criteria"}
+}
+
+
+###
+    "type": "HealthCheck",
+    "sickLeave":{"startDate":"2020/01/01", "endDate":"2021-02-02"},
+
