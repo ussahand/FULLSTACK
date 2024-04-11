@@ -1,0 +1,48 @@
+name: Print GitHub Action Variables
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+jobs:
+  print-variables:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print Workflow Variables
+        run: |
+          echo "[GITHUB.EVENT_NAME:${{GITHUB.EVENT_NAME}}]"
+          echo "[Repos Name, github.repository:${{ github.repository }}]"
+          echo "[Triggering Branch, github.ref:${{github.ref}}]"
+          echo "[Source Branch, github.event.pull_request.head.label:${{ github.event.pull_request.head.label }}]"
+          echo "[Destination(base) branch, github.event.pull_request.base.label:${{ github.event.pull_request.base.label }}]"
+          echo "[Pull request state:${{ github.event.pull_request.state }}]"
+          echo "[Pull request merged: ${{ github.event.pull_request.merged }}]"
+          echo "[Statuses URL: ${{ github.event.pull_request.statuses_url }}"
+          echo "Current Directory: $PWD"
+          echo "Repository Name: $GITHUB_REPOSITORY"
+          echo "Repository Owner: $GITHUB_REPOSITORY_OWNER"
+          echo "Done"
+    
+      - name: PR object
+        run: echo "Pull Request Object:${{ toJson(github.event.pull_request) }}"
+  tag_release:
+    needs: [print-variables]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Bump version and push tag
+      id: step1
+      uses: anothrNick/github-tag-action@1.67.0 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        WITH_V: true
+        DRY_RUN: true
+        DEFAULT_BUMP: patch
+        #VERBOSE: true 0
+    - name: Vrsion Bumping result 
+      run: |
+        echo "obj = ${{ toJson(steps.step1.outputs)}}"
+        ls -la

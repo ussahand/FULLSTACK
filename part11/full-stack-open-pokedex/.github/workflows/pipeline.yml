@@ -1,0 +1,120 @@
+name: Deployment CI Pipeline
+on:
+  push:
+    branches: main000
+  pull_request:
+    branches: [main]  #Specifies that the workflow should be triggered only when 
+    #the base branch of the pull request is main. This means that the pull request 
+    #must be merging changes into the main branch for the workflow to be triggered.
+    types: [opened, synchronize]
+env: 
+  skip_msg: ${{ contains(toJson(github.event.commits.*.message), '#skip') }}
+  running_step: "chekout repo to linux VM"
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: update steps for Node install
+        run: echo "running_step=$running_step, node install" >> $GITHUB_ENV
+
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: "16"
+
+      - name: Install dependencies
+        run: | 
+          echo "running_step=$running_step, dependecies install" >> $GITHUB_ENV
+          yarn
+
+      - name: check style
+        run: |
+          echo "running_step=$running_step, eslint" >> $GITHUB_ENV
+          yarn eslint
+
+      - name: build production
+        run: |
+          echo "running_step=$running_step, build" >> $GITHUB_ENV
+          yarn build
+
+      - name: run tests
+        run: |
+          echo "running_step=$running_step, test" >> $GITHUB_ENV
+          yarn test
+
+      - name: update steps for e2e test
+        run: echo "running_step=$running_step, cypress e2e test" >> $GITHUB_ENV
+
+      - name: e2e tests
+        uses: cypress-io/github-action@v5
+        with:
+          command: yarn test:e2e
+          start: yarn start-prod
+          wait-on: http://localhost:5000        
+ 
+      #-----------------------------------------
+      # Deploy to fly.io
+      - name: Prepare Fly.io
+        #This action installs and configures the flyctl command-line tool, which is used to interact with Fly.io.
+        if: ${{ github.event_name == 'push' && env.skip_msg != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        if: ${{ github.event_name == 'push' && env.skip_msg != 'true'}}
+        run: |
+          echo "running_step=$running_step, deploy to fly.io" >> $GITHUB_ENV
+          flyctl deploy --remote-only --config fly.toml --env "TIMESTAMP=$(date +%Y%m%d%H%M%S)"
+        env:
+          #allowing flyctl to authenticate with your Fly.io account.
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}       
+
+      #------------------------------------
+      # send success and failure to Discord
+      - name: linux Test Info
+        if: ${{ success()  && env.skip_msg != 'true' }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: "workflow successfully passed:  ${{ env.running_step }}."
+          # webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.FULL_STACK_COURSE_WEB_HOOK }}
+
+      - name: linux Test Error
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: "workflow failed in the last step: ${{ env.running_step }}."
+          # webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          webhookUrl: ${{ secrets.FULL_STACK_COURSE_WEB_HOOK }}
+
+
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print commit message
+        run: echo "${{ env.skip_msg }}"
+
+      - uses: actions/checkout@v4
+
+      - name: Bump version and push tag
+        id: step1
+        if: ${{ env.skip_msg != 'true' }}
+        uses: anothrNick/github-tag-action@1.67.0 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          #DRY_RUN: true
+          #VERBOSE:  true 0
+  
+      - name: Vrsion Bumping result 
+        run: |
+          echo "old tag = ${{steps.step1.outputs.old_tag}}"
+          echo "new tag = ${{steps.step1.outputs.new_tag}}"
+          echo "tag = ${{steps.step1.outputs.tag}}"
+          echo "bumped part = ${{steps.step1.outputs.part}}"
+
+

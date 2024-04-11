@@ -1,0 +1,85 @@
+name: Testing stuff
+
+on:
+  push:
+    branches:
+      - main
+env:
+  gmsg: ${{ join(github.event.commits.*.message, ',') }}
+  gvar: '1'
+jobs:
+  a_test_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: echo "$COMMITS"
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
+      - name: join commit messages
+        id: jcm
+        env:
+          msg0: ${{ join(github.event.commits.*.message, ',') }}
+        run: |
+          msg1=$(echo "$msg0" | tr '\n' ',')
+          echo "Joined commit messages: $msg0"
+          echo "Joined commit messages: $msg1"
+          echo "msg=$msg1" >> $GITHUB_OUTPUT #depricated env var def is in next line
+          # echo "::set-output name=msg::$msg1"
+
+          #def a GitHub env and you can access it without step hirarchy
+          echo "new_msg=$msg1"  >> $GITHUB_ENV
+          echo "gvar=rrrrrrrrrr" >> $GITHUB_ENV
+      - name: updated variable
+        run: |
+          echo "updated var: ${{ env.new_msg }}"
+          echo "updated var: ${{ env.gvar }}"
+
+      - name: Should Skip or not
+        env:
+          no_skip: ${{ ! contains(steps.jcm.outputs.msg, '#skip') }}
+          #remember the no_skip value is string literal and not a boolean
+          #so its contain 'true' or 'false' and not true or false
+        if: ${{ env.no_skip == 'true' }}
+        run: |
+          echo "$no_skip, ${{steps.jcm.outputs.msg}} ,  ${{ env.no_skip }}"
+          echo "$no_skip, $new_msg"
+      
+      - name: skip 2
+        if: ${{ !contains(toJson(github.event.commits.*.message), '#skip') }}
+        run: echo "no skippppp"
+
+      - name: global message
+        run: echo "$gmsg,  msg "
+
+
+  linux_test:
+    runs-on:  ubuntu-latest
+    name: linux Test Job
+    steps:
+      - name: Step 2
+        run: exit 1  # This step fails
+        continue-on-error: true        
+      - name: linux Test Info
+        if: success()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: test succeeded.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: linux Test Error
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: test error.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+   
